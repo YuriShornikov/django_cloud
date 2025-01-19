@@ -1,0 +1,48 @@
+# Виртуальное окружение
+venv/
+
+# Конфиденциальные файлы
+.env
+*.env
+
+# SQLite
+db.sqlite3
+*.sqlite3
+
+# Миграции
+*/migrations/*.py
+!*/migrations/__init__.py
+
+# Кэш и временные файлы
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+*.swp
+*.bak
+*.tmp
+
+# Загруженные файлы
+media/
+uploads/
+
+# Статический контент
+staticfiles/
+
+# IDE и редакторы
+.vscode/
+.idea/
+*.iml
+
+# Файлы зависимостей
+*.egg-info/
+.Python
+pip-log.txt
+
+# Собранные файлы
+*.dll
+*.so
+*.dylib
+*.exe
+*.o
+*.a
