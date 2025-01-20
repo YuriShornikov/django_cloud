@@ -28,7 +28,7 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'http://localhost:5173/']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'http://localhost:5173/', '']
 
 
 # Application definition
