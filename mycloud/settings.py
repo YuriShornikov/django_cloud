@@ -6,6 +6,22 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
 # Путь для сохранения загруженных файлов
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -28,7 +44,7 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'http://localhost:5173/', '']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'http://localhost:5173/', '194.58.126.217']
 
 
 # Application definition
@@ -73,22 +89,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'mycloud.urls'
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
-
 WSGI_APPLICATION = 'mycloud.wsgi.application'
 
 # Password validation
@@ -128,7 +128,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 # Статические файлы
-STATIC_ROOT=os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR / 'static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -206,3 +206,4 @@ USE_TZ = True
 
 # Устанавливаем нужную временную зону
 TIME_ZONE = 'Europe/Moscow'
+
