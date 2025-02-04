@@ -35,11 +35,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, blank=True, null=True)
     password = models.CharField(max_length=128)
     avatar = models.URLField(max_length=200, blank=True, null=True)
-    is_admin = models.BooleanField(default=False)  # Определяет, является ли пользователь администратором
+    is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=now)
-    others = models.JSONField(default=dict, blank=True, null=True)  # Дополнительные данные пользователя
+    others = models.JSONField(default=dict, blank=True, null=True)
 
     objects = CustomUserManager()
 

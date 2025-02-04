@@ -10,10 +10,10 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'login', 'fullname', 'email', 'password', 'avatar', 'is_admin', 'files']
 
     def create(self, validated_data):
-        password = validated_data.pop('password', None)  # Извлекаем пароль, если есть
+        password = validated_data.pop('password', None)
         user = CustomUser(**validated_data)
         if password:
-            user.set_password(password)  # Хэшируем пароль
+            user.set_password(password)
         user.save()
         return user
     
@@ -22,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         if password:
-            instance.set_password(password)  # Хэшируем пароль перед сохранением
+            instance.set_password(password)
         instance.save()
         return instance
 

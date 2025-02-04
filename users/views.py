@@ -3,31 +3,22 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.exceptions import PermissionDenied
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth import get_user_model
-from .models import CustomUser
 from .serializers import UserSerializer
+from django.middleware.csrf import get_token
+from django.http import JsonResponse
 import logging
+import json
 
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
+print(User.objects.filter(login="admin").exists())
 
-# Utility function to generate JWT tokens
-def get_tokens_for_user(user):
-    try:
-        refresh = RefreshToken.for_user(user)
-        return {
-            "refresh": str(refresh),
-            "access": str(refresh.access_token),
-        }
-    except Exception as e:
-        logger.error(f"Error generating tokens for user {user}: {e}")
-        raise
+def get_csrf_token(request):
+    return JsonResponse({"csrfToken": get_token(request)})
 
-# Register a new user
+# Регистрация пользователя
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
@@ -35,94 +26,128 @@ class RegisterView(APIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            tokens = get_tokens_for_user(user)
-            login(request, user)
+            login(request, user)  # ВАЖНО: создаем сессию
             logger.info(f"User registered: {user.login}")
             return Response({
                 "message": "Registration successful",
-                "tokens": tokens,
                 "user": UserSerializer(user).data,
             }, status=status.HTTP_201_CREATED)
 
         logger.warning(f"Registration failed: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# Login existing user
+# Логин через сессию
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        login_data = request.data.get('login')
-        password = request.data.get('password')
+        login_data = request.data.get("login")
+        password = request.data.get("password")
+        logger.info(f"test: {password}")
 
         if not login_data or not password:
             return Response({"message": "Login and password are required"}, status=status.HTTP_400_BAD_REQUEST)
 
         logger.info(f"Login attempt for: {login_data}")
-        user = authenticate(request, username=login_data, password=password)
+        user = authenticate(request, login=login_data, password=password)
+        logger.info(f"test: {user}")
+
+        if request.session.get('_auth_user_id'):
+            logout(request)
 
         if user and user.is_active:
             login(request, user)
-            logger.info(f"User logged in: {user.login}")
+            response = Response(
+                {
+                    "message": "Login successful",
+                    "user": UserSerializer(user).data,
+                },
+                status=status.HTTP_200_OK,
+            )
+            response.set_cookie(
+                key="csrftoken",
+                value=get_token(request),
+                httponly=True,
+                secure=False,
+                samesite="None",
+            )
+            return response
+        
+        logout(request)
 
-            tokens = get_tokens_for_user(user)
-
-            return Response({
-                "message": "Login successful",
-                "user": UserSerializer(user).data,
-                "tokens": tokens,
-            }, status=status.HTTP_200_OK)
-
-        logger.warning(f"Authentication failed for: {login_data}")
+        logger.info(f"Authentication failed for: {login_data}")
         return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
+# Проверка сессии (получение текущего пользователя)
+class CheckAuthView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request):
+        return Response({"message": "Authenticated", "user": UserSerializer(request.user).data}, status=status.HTTP_200_OK)
+
+# Обновление полей пользователя
 class UpdateUserView(APIView):
     permission_classes = [IsAuthenticated]
 
     def patch(self, request):
-        # Проверяем, кто запрашивает изменение
         user = request.user
         data = request.data
 
-        target_user_id = data.get('id', None)
-        target_user = user  # По умолчанию, редактируется сам пользователь
+        logger.info(f"Received cookies: {json.dumps(request.COOKIES)}")
 
-        # Если администратор, позволяем указать другого пользователя
+        logger.info(f"User {user.fullname} attempting to update user data.")
+
+        # Логируем, кто является текущим пользователем
+        logger.info(f"Current user: {user.fullname}, is admin: {user.is_admin}")
+
+        target_user_id = data.get('id', None)
+        target_user = user
+
+        # Если пользователь администратор, он может обновить данные другого пользователя
+        logger.error(f"не админ: {user.is_admin}")
         if user.is_admin and target_user_id:
             try:
                 target_user = User.objects.get(id=target_user_id)
             except User.DoesNotExist:
                 return Response({"error": "Target user does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
-        # Разрешённые поля для обновления
+        # Разрешенные поля для обновления
         allowed_fields = {"fullname", "login", "email", "password", "avatar", "is_admin"}
+
+        # Фильтруем только те поля, которые разрешены
         updated_fields = {key: value for key, value in data.items() if key in allowed_fields}
 
+        # Если нет действительных полей для обновления
         if not updated_fields:
             return Response({"error": "No valid fields provided for update."}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Обновляем поля
         for field, value in updated_fields.items():
             setattr(target_user, field, value)
+
+        # Если обновляется пароль, можно добавить дополнительную проверку
+        if 'password' in updated_fields:
+            target_user.set_password(updated_fields['password'])  # Хэшируем пароль
 
         target_user.save()
         serializer = UserSerializer(target_user)
         return Response({"user": serializer.data}, status=status.HTTP_200_OK)
 
 
-# Logout user
+# Выход из системы (удаление сессии)
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         try:
-            logout(request)
+            request.session.flush()  # Удаление сессии
             logger.info("User logged out.")
             return Response({"message": "Logout successful."}, status=status.HTTP_200_OK)
         except Exception as e:
             logger.error(f"Logout failed: {e}")
             return Response({"message": "Logout failed"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+# Удаление пользователя
 class DeleteUserView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -136,20 +161,19 @@ class DeleteUserView(APIView):
             return Response({"message": "Пользователь удалён"}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response({"error": "Пользователь не найден"}, status=status.HTTP_404_NOT_FOUND)
-        
+
+# Получение списка пользователей
 class GetUsersView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Проверяем, что запрос делает администратор
         if not request.user.is_admin:
             return Response({"error": "Нет прав для просмотра пользователей"}, status=status.HTTP_403_FORBIDDEN)
         
         try:
-            users = User.objects.all()  # Получаем всех пользователей
-            serializer = UserSerializer(users, many=True)  # Сериализуем список пользователей
+            users = User.objects.all()
+            serializer = UserSerializer(users, many=True)
             return Response({"users": serializer.data}, status=status.HTTP_200_OK)
         except Exception as e:
             logger.error(f"Ошибка при получении пользователей: {e}")
             return Response({"error": "Не удалось получить список пользователей"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
