@@ -10,12 +10,10 @@ from django.http import JsonResponse
 import logging
 import json
 from django.contrib.auth import update_session_auth_hash
-# from users.models import CustomUser as User
 
 logger = logging.getLogger('users')
 
 User = get_user_model()
-# print(User.objects.filter(login="admin").exists())
 
 def get_csrf_token(request):
     return JsonResponse({"csrfToken": get_token(request)})
@@ -28,7 +26,7 @@ class RegisterView(APIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            login(request, user)  # ВАЖНО: создаем сессию
+            login(request, user)
             logger.info(f"User registered: {user.login}")
             return Response({
                 "message": "Registration successful",
@@ -135,16 +133,11 @@ class UpdateUserView(APIView):
             else:
                 setattr(target_user, field, value)
 
-        
-
-        
-
         target_user.save()
 
         logger.info(f"Before update: user {target_user.fullname}, session_key: {request.session.session_key}")
         serializer = UserSerializer(target_user)
         return Response({"user": serializer.data}, status=status.HTTP_200_OK)
-
 
 # Выход из системы (удаление сессии)
 class LogoutView(APIView):

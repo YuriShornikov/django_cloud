@@ -1,7 +1,6 @@
-from rest_framework.parsers import MultiPartParser, JSONParser
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework import status, permissions
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import File
 from .serializers import FileSerializer
@@ -32,7 +31,7 @@ class FileUploadView(viewsets.ViewSet):
     def upload_file(self, request, *args, **kwargs):
         files = request.FILES.getlist('file')
         comment = request.data.get('comment', '')
-        user_id = request.data.get('user_id')  # Получаем ID целевого пользователя
+        user_id = request.data.get('user_id')
 
         if not files:
             return Response({"error": "Файлы не предоставлены"}, status=status.HTTP_400_BAD_REQUEST)
@@ -167,15 +166,15 @@ class FileUploadView(viewsets.ViewSet):
             return Response({"error": "Новое имя файла не может быть пустым"}, status=status.HTTP_400_BAD_REQUEST)
         
         # Путь к старому файлу
-        old_file_path = file_instance.url.path  # путь до файла в файловой системе
+        old_file_path = file_instance.url.path
 
         if new_name and os.path.exists(old_file_path):
-            file_extension = os.path.splitext(old_file_path)[1]  # получаем расширение файла
-            new_file_name = f"{new_name}{file_extension}"  # сохраняем расширение
+            file_extension = os.path.splitext(old_file_path)[1]
+            new_file_name = f"{new_name}{file_extension}"
             new_file_path = os.path.join(os.path.dirname(old_file_path), new_file_name)
 
-            os.rename(old_file_path, new_file_path)  # переименовываем файл
-            file_instance.url.name = os.path.relpath(new_file_path, settings.MEDIA_ROOT)  # обновляем путь в базе
+            os.rename(old_file_path, new_file_path)
+            file_instance.url.name = os.path.relpath(new_file_path, settings.MEDIA_ROOT)
 
             if new_name:
                 file_instance.file_name = new_name
