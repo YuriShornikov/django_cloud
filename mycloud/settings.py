@@ -25,12 +25,12 @@ SESSION_COOKIE_SECURE = False
 SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_NAME = 'sessionid'
 SESSION_COOKIE_AGE = 1209600
-SESSION_SAVE_EVERY_REQUEST = True
+# SESSION_SAVE_EVERY_REQUEST = True
 
 # Настройки CSRF
 CSRF_TRUSTED_ORIGINS = ["http://localhost:5173"]
 CSRF_COOKIE_NAME = "csrftoken"
-CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = False  # Должен быть True для (HTTPS)
 CSRF_COOKIE_SAMESITE = "Lax"
 CSRF_FAILURE_VIEW = 'django.views.csrf.csrf_failure'
@@ -68,13 +68,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
-    # 'users',
+    'users',
     'storage',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'django.contrib.sites',
-    'users.apps.UsersConfig',
+    # 'users.apps.UsersConfig',
 ]
 
 SITE_ID = 1

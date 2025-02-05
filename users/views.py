@@ -9,11 +9,13 @@ from django.middleware.csrf import get_token
 from django.http import JsonResponse
 import logging
 import json
+from django.contrib.auth import update_session_auth_hash
+# from users.models import CustomUser as User
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('users')
 
 User = get_user_model()
-print(User.objects.filter(login="admin").exists())
+# print(User.objects.filter(login="admin").exists())
 
 def get_csrf_token(request):
     return JsonResponse({"csrfToken": get_token(request)})
@@ -121,15 +123,25 @@ class UpdateUserView(APIView):
         if not updated_fields:
             return Response({"error": "No valid fields provided for update."}, status=status.HTTP_400_BAD_REQUEST)
 
+        logger.info(f"Before update: user {target_user.fullname}, session_key: {request.session.session_key}")
         # Обновляем поля
         for field, value in updated_fields.items():
-            setattr(target_user, field, value)
+            # Если обновляется пароль, можно добавить дополнительную проверку
+            if 'password' in updated_fields:
+                logger.info(f"Received raw password for user {target_user.fullname}: {value}")
+                target_user.set_password(updated_fields['password'])  # Хэшируем пароль
+                logger.info(f"Hashed password for user {target_user.fullname}: {target_user.password}")
+                update_session_auth_hash(request, target_user)
+            else:
+                setattr(target_user, field, value)
 
-        # Если обновляется пароль, можно добавить дополнительную проверку
-        if 'password' in updated_fields:
-            target_user.set_password(updated_fields['password'])  # Хэшируем пароль
+        
+
+        
 
         target_user.save()
+
+        logger.info(f"Before update: user {target_user.fullname}, session_key: {request.session.session_key}")
         serializer = UserSerializer(target_user)
         return Response({"user": serializer.data}, status=status.HTTP_200_OK)
 

@@ -1,5 +1,6 @@
 from rest_framework.parsers import MultiPartParser, JSONParser
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status, permissions
 from django.shortcuts import get_object_or_404
 from .models import File
@@ -17,15 +18,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 from django.conf import settings
 
-logger = logging.getLogger('users')
+logger = logging.getLogger('storage')
 logger.setLevel(logging.DEBUG)
 
 User = get_user_model()
 
 
 class FileUploadView(viewsets.ViewSet):
-    parser_classes = [MultiPartParser, JSONParser]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     # Загрузка файлов
     @action(detail=False, methods=['post'])
@@ -116,7 +116,7 @@ class FileUploadView(viewsets.ViewSet):
 
             # Для администратора: возвращаем все файлы
             files = File.objects.all()
-        elif request.user.id == user_id:
+        elif request.user.id == int(user_id):
 
             # Для обычного пользователя: возвращаем только его файлы
             files = File.objects.filter(user_id=user_id)
