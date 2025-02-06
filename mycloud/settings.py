@@ -1,10 +1,12 @@
 from pathlib import Path
-from datetime import timedelta
 from pathlib import Path
 from decouple import config
 import os
+import environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = environ.Env()
 
 # Путь для сохранения загруженных файлов
 MEDIA_URL = '/media/'

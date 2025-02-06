@@ -178,10 +178,10 @@ class FileUploadView(viewsets.ViewSet):
 
             if new_name:
                 file_instance.file_name = new_name
-            if new_comment is not None:
+        if new_comment is not None:
                 file_instance.comment = new_comment
 
-            file_instance.save()
+        file_instance.save()
 
-            serializer = FileSerializer(file_instance)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = FileSerializer(file_instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
