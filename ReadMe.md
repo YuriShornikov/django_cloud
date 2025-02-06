@@ -43,7 +43,7 @@ WantedBy=multi-user.target
 ```
 server {
         listen 80; # прослушивание порта
-        server_name 95.163.222.139; # ip сервера
+        server_name 89.104.71.218; # ip сервера
         client_max_body_size 104857600; # разрешенный размер загружаемого файла
 
         # Обслуживание статических файлов Django
@@ -83,7 +83,7 @@ server {
         }
 }
 ```
-3.28 sudo ln -s /etc/nginx/sites-available/my_project /etc/nginx/sites-anabled/
+3.28 sudo ln -s /etc/nginx/sites-available/my_project /etc/nginx/sites-enabled/
 3.29 ls -l /etc/nginx/sites-enabled/ - проверка создания
 3.30 sudo systemctl start nginx
 3.31 sudo ufw allow 'Nginx Full'
