@@ -14,13 +14,13 @@
 3.13 ALTER USER postgres WITH PASSWORD 'admin1234'; - создаем пользователя с паролем
 3.14 CREATE DATABASE cloud; - создаем бд
 3.15 \q - выходим из бд
-3.16 nano mycloud/settings.py - прописываем ip в разрешение
-3.17 nano .env - создаем и заполняем поля для коннекта к бд для django, если файла еще нет
+<!-- 3.16 nano mycloud/settings.py - прописываем ip в разрешение
+3.17 nano .env - создаем и заполняем поля для коннекта к бд для django, если файла еще нет -->
 3.18 python3 -m venv env
 3.19 source env/bin/activate - активация
 3.20 pip install -r requirements.txt - установка библиотек
-3.21 pip install gunicorn - установка отдельно, если отсутствует
-3.22 python manage.py makemigrations - создание миграции, если отсутствуют
+<!-- 3.21 pip install gunicorn - установка отдельно, если отсутствует -->
+<!-- 3.22 python manage.py makemigrations - создание миграции, если отсутствуют -->
 3.23 python manage.py migrate - приминение миграции
 3.24 sudo nano /etc/systemd/system/gunicorn.service - прописываем значения
 ```
@@ -53,12 +53,12 @@ server {
 
         # Обслуживание статических файлов React
         location /assets/ {
-                root /home/aukor/django_cloud/frontend/; # определение, где искать статические файлы js, css и тд
+                root /home/aukor/django_cloud/frontend/dist/; # определение, где искать статические файлы js, css и тд
         }
 
         # Маршруты React-приложения (SPA)
         location / {
-                root /home/aukor/django_cloud/frontend/; # Указывает папку, где находятся файлы React-приложения
+                root /home/aukor/django_cloud/frontend/dist/; # Указывает папку, где находятся файлы React-приложения
                 index index.html; # Указывает файл, который будет загружен по умолчанию при запросе к корню
                 try_files $uri /index.html; # Проверяет наличие файла или директории, запрашиваемых в URL, если нету, то /index.html
         }
