@@ -1,6 +1,6 @@
-3. Проект работает на рег.ру. Для просмотра перейдите по адресу: `http://89.104.71.250/` Для развертывания проекта необходимо:
+3. Проект работает на рег.ру. Для просмотра перейдите по адресу: `http://95.163.222.139/` Для развертывания проекта необходимо:
 3.1 В мои ресурсы/виртуальные машины добавить ubuntu на минималках с ssh ключом.
-3.2 В PowerShell прописать ssh root@89.104.71.250 - ip вашего сервера ввести пароль
+3.2 В PowerShell прописать ssh root@95.163.222.139 - ip вашего сервера ввести пароль
 3.3 adduser aukor - создание пользователя
 3.4 usermod aukor -aG sudo - дать права
 3.5 su aukor - зайти под пользователем aukor
@@ -11,7 +11,7 @@
 3.10 cd django_cloud - перейти в папку с распакованными файлами
 3.11 sudo su postgres - зайти в бд
 3.12 psql
-3.13 ALTER USER postgres WITH PASSWORD 'password'; - создаем пользователя с паролем
+3.13 ALTER USER postgres WITH PASSWORD 'admin1234'; - создаем пользователя с паролем
 3.14 CREATE DATABASE cloud; - создаем бд
 3.15 \q - выходим из бд
 3.16 nano mycloud/settings.py - прописываем ip в разрешение
@@ -32,7 +32,7 @@ After=network.target
 User=aukor
 Group=www-data
 WorkingDirectory=/home/aukor/django_cloud
-ExecStart=/home/aukor/django_cloud/env/bin/gunicorn --access-logfile - --workers=3 --bind unic:/home/aukor/django_cloud/mycloud/project.sock mycloud.wsgi:application
+ExecStart=/home/aukor/django_cloud/env/bin/gunicorn --access-logfile - --workers=3 --bind unix:/home/aukor/django_cloud/mycloud/project.sock mycloud.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
@@ -43,7 +43,7 @@ WantedBy=multi-user.target
 ```
 server {
         listen 80; # прослушивание порта
-        server_name 89.104.71.250; # ip сервера
+        server_name 95.163.222.139; # ip сервера
         client_max_body_size 104857600; # разрешенный размер загружаемого файла
 
         # Обслуживание статических файлов Django
@@ -83,7 +83,7 @@ server {
         }
 }
 ```
-3.28 sudo ln -s /etc/nginx/sites-available/my_project /etc/nginx/sites-anabled
+3.28 sudo ln -s /etc/nginx/sites-available/my_project /etc/nginx/sites-anabled/
 3.29 ls -l /etc/nginx/sites-enabled/ - проверка создания
 3.30 sudo systemctl start nginx
 3.31 sudo ufw allow 'Nginx Full'

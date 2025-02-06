@@ -2,16 +2,16 @@
 venv/
 
 # Конфиденциальные файлы
-.env
-*.env
+# .env
+# *.env
 
 # SQLite
 db.sqlite3
 *.sqlite3
 
 # Миграции
-*/migrations/*.py
-!*/migrations/__init__.py
+# */migrations/*.py
+# !*/migrations/__init__.py
 
 # Кэш и временные файлы
 __pycache__/
@@ -23,11 +23,11 @@ __pycache__/
 *.tmp
 
 # Загруженные файлы
-media/
+# media/
 uploads/
 
 # Статический контент
-staticfiles/
+# staticfiles/
 
 # IDE и редакторы
 .vscode/
@@ -46,3 +46,24 @@ pip-log.txt
 *.exe
 *.o
 *.a
+
+*.gitignore
+
+# Node.js
+node_modules/
+
+# React
+build/
+dist/
+
+# Логи
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Логи браузера
+*.log
+
+# Другие временные файлы
+*.tgz
+*.lock
