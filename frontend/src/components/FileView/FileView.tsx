@@ -66,6 +66,21 @@ export const FileView: React.FC<FileViewProps> = ({ file, onClose }) => {
     });
   };
 
+  // копирование ссылки
+  const copyToClipboard = (text: string) => {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+        document.execCommand("copy");
+        alert("Ссылка скопирована!");
+    } catch (err) {
+        console.error("Ошибка при копировании", err);
+    }
+    document.body.removeChild(textarea);
+  };
+
 	const isImage = file.type.startsWith('image/');
 
   return (
@@ -131,7 +146,8 @@ export const FileView: React.FC<FileViewProps> = ({ file, onClose }) => {
               <td>
                 <button
                   className='btn'
-                  onClick={() => navigator.clipboard.writeText(sharedLink)}
+                  // onClick={() => navigator.clipboard.writeText(sharedLink)}
+                  onClick={() => copyToClipboard(sharedLink)}
                  >
                   Копировать
                 </button>
