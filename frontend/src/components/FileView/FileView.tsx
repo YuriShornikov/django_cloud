@@ -74,7 +74,6 @@ export const FileView: React.FC<FileViewProps> = ({ file, onClose }) => {
     textarea.select();
     try {
         document.execCommand("copy");
-        alert("Ссылка скопирована!");
     } catch (err) {
         console.error("Ошибка при копировании", err);
     }
