@@ -10,7 +10,7 @@ def create_default_site(sender, **kwargs):
         Site.objects.update_or_create(
             id=1,
             defaults={
-                "domain": env("DOMAIN", default="localhost"),
+                "domain": env("DOMAIN", default="localhost:8000"),
                 "name": env("SITE_NAME", default="localhost"),
             },
         )

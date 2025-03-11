@@ -13,9 +13,9 @@ export const Login: React.FC = () => {
 
   // Проверка авторизации пользователя
   useEffect(() => {
-    dispatch(checkAuth());
+    dispatch(checkAuth()).unwrap().catch(() => {});
   }, [dispatch]);
-
+  
   useEffect(() => {
     if (currentUser) {
       navigate('/profile');

@@ -7,15 +7,16 @@ import environ
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 # Путь для сохранения загруженных файлов
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_ALLOW_ALL = True
+
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_HTTPONLY = True
@@ -26,7 +27,7 @@ SESSION_COOKIE_AGE = 1209600
 # SESSION_SAVE_EVERY_REQUEST = True
 
 # Настройки CSRF
-CSRF_TRUSTED_ORIGINS = ["http://89.104.71.218/"]
+CSRF_TRUSTED_ORIGINS = ["http://79.174.92.131"]
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = False  # Должен быть True для (HTTPS)
@@ -49,7 +50,8 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'localhost:5173', '', '194.58.126.217', '89.104.71.250', '89.104.71.218']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'localhost:5173', '', '194.58.126.217', '79.174.92.131']
+
 
 # Application definition
 

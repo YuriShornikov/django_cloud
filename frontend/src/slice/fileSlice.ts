@@ -182,6 +182,7 @@ const fileSlice = createSlice({
 			// Удаление файла
       .addCase(deleteFile.pending, handlePending)
       .addCase(deleteFile.fulfilled, (state, action) => {
+        console.log('Удалён файл с ID:', action.payload);
         state.files = state.files.filter((file) => file.id !== action.payload);
       	state.loading = false;
       })

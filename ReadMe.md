@@ -83,6 +83,51 @@ server {
         }
 }
 ```
+```
+server {
+        listen 80;
+        server_name 95.163.221.26;
+
+        client_max_body_size 100M;
+
+        # Обслуживание React-приложения
+        location / {
+            root /home/aukor/django_cloud/frontend/dist;
+            index index.html;
+            try_files $uri /index.html;
+        }
+
+        # Статические файлы фронтенда (например, ассеты)
+        location /assets/ {
+            root /home/aukor/django_cloud/frontend/dist;
+            try_files $uri =404;
+        }
+    }
+
+server {
+        listen 8000;
+        server_name 95.163.221.26;
+
+        client_max_body_size 100M;
+
+        # Проксирование всех запросов к бэкенду
+        location / {
+            include proxy_params;
+            proxy_pass http://unix:/home/aukor/django_cloud/backend/mycloud/project.sock;
+        }
+
+        # Обслуживание медиа-файлов Django
+        location /media/ {
+            alias /home/aukor/django_cloud/backend/media/;
+            autoindex on;
+        }
+
+        # Обслуживание статических файлов Django
+        location /static/ {
+            alias /home/aukor/django_cloud/backend/static/;
+        }
+}
+```
 3.28 sudo ln -s /etc/nginx/sites-available/my_project /etc/nginx/sites-enabled/
 3.29 ls -l /etc/nginx/sites-enabled/ - проверка создания
 3.30 sudo systemctl start nginx

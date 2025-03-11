@@ -10,6 +10,7 @@ from django.http import JsonResponse
 import logging
 import json
 from django.contrib.auth import update_session_auth_hash
+# from users.models import CustomUser as User
 
 logger = logging.getLogger('users')
 
@@ -26,7 +27,7 @@ class RegisterView(APIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            login(request, user)
+            login(request, user)  # ВАЖНО: создаем сессию
             logger.info(f"User registered: {user.login}")
             return Response({
                 "message": "Registration successful",
@@ -80,10 +81,16 @@ class LoginView(APIView):
 
 # Проверка сессии (получение текущего пользователя)
 class CheckAuthView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
-        return Response({"message": "Authenticated", "user": UserSerializer(request.user).data}, status=status.HTTP_200_OK)
+        if request.user.is_authenticated:
+            return Response(
+                {"authenticated": True, "user": UserSerializer(request.user).data},
+                status=status.HTTP_200_OK
+            )
+        return Response({"authenticated": False}, status=status.HTTP_200_OK)
+
 
 # Обновление полей пользователя
 class UpdateUserView(APIView):
@@ -133,11 +140,16 @@ class UpdateUserView(APIView):
             else:
                 setattr(target_user, field, value)
 
+        
+
+        
+
         target_user.save()
 
         logger.info(f"Before update: user {target_user.fullname}, session_key: {request.session.session_key}")
         serializer = UserSerializer(target_user)
         return Response({"user": serializer.data}, status=status.HTTP_200_OK)
+
 
 # Выход из системы (удаление сессии)
 class LogoutView(APIView):
