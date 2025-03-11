@@ -31,8 +31,8 @@ After=network.target
 [Service]
 User=aukor
 Group=www-data
-WorkingDirectory=/home/aukor/django_cloud
-ExecStart=/home/aukor/django_cloud/env/bin/gunicorn --access-logfile - --workers=3 --bind unix:/home/aukor/django_cloud/mycloud/project.sock mycloud.wsgi:application
+WorkingDirectory=/home/aukor/django_cloud/backend
+ExecStart=/home/aukor/django_cloud/backend/env/bin/gunicorn --access-logfile - --workers=3 --bind unix:/home/aukor/django_cloud/backend/mycloud/project.sock mycloud.wsgi:application
 
 [Install]
 WantedBy=multi-user.target

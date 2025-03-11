@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppSelector } from '../../hooks/hooks';
 import { User, File as CustomFile } from '../../types/types';
 import { FileView } from '../FileView/FileView';
@@ -17,6 +17,10 @@ export const FilesList: React.FC<FilesListProps> = ({ user }) => {
   const files = useAppSelector((state) => state.files.files);
   const [selectedFile, setSelectedFile] = useState<CustomFile | null>(null);
 
+  useEffect(() => {
+    dispatch(fetchFiles({ userId: user.id }));
+  }, [dispatch, files.length]);
+
   // Переход к редактированию файла
   const handleFileClick = (file: CustomFile) => {
     if (file) setSelectedFile(file);
@@ -29,7 +33,7 @@ export const FilesList: React.FC<FilesListProps> = ({ user }) => {
   // Закрытие редакта
   const handleClose = () => {
     setSelectedFile(null);
-    dispatch(fetchFiles({ userId: user.id }));
+    // dispatch(fetchFiles({ userId: user.id }));
   };
 
   interface Field {
