@@ -1,6 +1,6 @@
 3. Проект работает на рег.ру. Для просмотра перейдите по адресу: `http://89.104.71.218/` Для развертывания проекта необходимо:
 3.1 В мои ресурсы/виртуальные машины добавить ubuntu на минималках с ssh ключом.
-3.2 В PowerShell прописать ssh root@[95.163.222.139](http://89.104.71.218) - ip вашего сервера ввести пароль
+3.2 В PowerShell прописать ssh root@[79.174.80.81](http://79.174.80.81) - ip вашего сервера ввести пароль
 3.3 adduser aukor - создание пользователя
 3.4 usermod aukor -aG sudo - дать права
 3.5 su aukor - зайти под пользователем aukor
@@ -32,6 +32,21 @@ After=network.target
 User=aukor
 Group=www-data
 WorkingDirectory=/home/aukor/django_cloud/backend
+ExecStart=/home/aukor/django_cloud/backend/env/bin/gunicorn --access-logfile - --workers=3 --bind unix:/home/aukor/django_cloud/backend/mycloud/project.sock mycloud.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+```
+```
+[Unit]
+Description=gunicorn service
+After=network.target
+
+[Service]
+User=aukor
+Group=www-data
+WorkingDirectory=/home/aukor/django_cloud/backend
+ExecStartPre=/home/aukor/django_cloud/backend/env/bin/python /home/aukor/django_cloud/backend/manage.py update_site
 ExecStart=/home/aukor/django_cloud/backend/env/bin/gunicorn --access-logfile - --workers=3 --bind unix:/home/aukor/django_cloud/backend/mycloud/project.sock mycloud.wsgi:application
 
 [Install]
@@ -86,7 +101,7 @@ server {
 ```
 server {
         listen 80;
-        server_name 95.163.221.26;
+        server_name 79.174.80.81;
 
         client_max_body_size 100M;
 
@@ -106,7 +121,7 @@ server {
 
 server {
         listen 8000;
-        server_name 95.163.221.26;
+        server_name 79.174.80.81;
 
         client_max_body_size 100M;
 

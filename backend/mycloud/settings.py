@@ -27,7 +27,7 @@ SESSION_COOKIE_AGE = 1209600
 # SESSION_SAVE_EVERY_REQUEST = True
 
 # Настройки CSRF
-CSRF_TRUSTED_ORIGINS = ["http://79.174.92.131"]
+CSRF_TRUSTED_ORIGINS = ["http://79.174.80.81"]
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = False  # Должен быть True для (HTTPS)
@@ -50,7 +50,7 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'localhost:5173', '', '194.58.126.217', '79.174.92.131']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'localhost:5173', '', '194.58.126.217', '79.174.80.81']
 
 
 # Application definition
