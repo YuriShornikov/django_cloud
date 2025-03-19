@@ -4,6 +4,41 @@ from decouple import config
 import os
 import environ
 
+import socket
+import requests
+
+# Получение ip
+def get_server_ip():
+    """Получает внешний IP сервера, если он не локальный."""
+    try:
+        response = requests.get("https://api64.ipify.org?format=text", timeout=3)
+        return response.text.strip()
+    except requests.RequestException:
+        return None
+
+# Локалка
+def is_local():
+    """Определяет, выполняется ли сервер локально."""
+    try:
+        hostname = socket.gethostname()
+        local_ip = socket.gethostbyname(hostname)
+        return local_ip.startswith("127.") or hostname == "localhost"
+    except socket.gaierror:
+        return True
+    
+# Автоматически настраиваем ALLOWED_HOSTS
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "localhost:5173"
+]
+
+# Добавляем ip
+if not is_local():
+    server_ip = get_server_ip()
+    if server_ip:
+        ALLOWED_HOSTS.append(server_ip)
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
@@ -27,7 +62,8 @@ SESSION_COOKIE_AGE = 1209600
 # SESSION_SAVE_EVERY_REQUEST = True
 
 # Настройки CSRF
-CSRF_TRUSTED_ORIGINS = ["http://79.174.92.124"]
+# CSRF_TRUSTED_ORIGINS = ["http://localhost:5173"]
+CSRF_TRUSTED_ORIGINS = [f"http://{host}" for host in ALLOWED_HOSTS]
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = False  # Должен быть True для (HTTPS)
@@ -50,7 +86,7 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'localhost:5173', '', '79.174.92.124', '79.174.80.81']
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'localhost:5173', '', '79.174.92.124', '79.174.80.81']
 
 
 # Application definition

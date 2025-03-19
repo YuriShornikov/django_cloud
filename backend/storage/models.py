@@ -14,7 +14,7 @@ class File(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     last_downloaded = models.DateTimeField(null=True, blank=True)
     comment = models.TextField(blank=True)
-    type = models.CharField(max_length=50, null=True, blank=True)
+    type = models.CharField(max_length=255, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if self.url:
