@@ -9,6 +9,7 @@ cd django_cloud
 ```
 
 ### 1.2. Настройка backend
+
 1. Создаем `.env` в `backend` напримере `.env.example`:
     ```python
     SECRET_KEY='создаемСвойКлюч'
@@ -80,6 +81,7 @@ cd django_cloud
 ```
 
 ### 2.6. Настройка backend
+
 1. В папке сщздаем файл `backend/.env`, как `.env.example` заменив на ip:
     ```env
     SECRET_KEY='создаемСвойКлюч'
@@ -249,3 +251,4 @@ sudo journalctl -u nginx --no-pager
 ```
 
 ### Готово к запуску
+
