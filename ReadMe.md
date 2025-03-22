@@ -80,12 +80,23 @@ cd django_cloud
 ```
 
 ### 2.6. Настройка backend
-1. В файле `backend/.env` заменить:
+1. В папке сщздаем файл `backend/.env`, как `.env.example` заменив на ip:
     ```env
-    DIS_SERVER=True
-    #Указать свой ip серва
+    SECRET_KEY='создаемСвойКлюч'
+    DEBUG=True
+    DB_NAME=mycloud
+    DB_USER=postgres
+    DB_PASSWORD=admin1234
+    DB_HOST=localhost
+    DB_PORT=5432
+
+    # Указывает, запущен ли сервер в продакшене, если локально, ставим - False
+    IS_SERVER=True
+
+    # Базовый URL для сервера
     BASE_URL=http://<IP_СЕРВЕРА>:8000
-    # Разрешить свой ip
+
+    # Разрешенные хосты, укажите свой ip в конце
     ALLOWED_HOSTS=localhost,127.0.0.1,localhost:5173,<IP_СЕРВЕРА>
     ```
 
