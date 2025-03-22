@@ -2,8 +2,8 @@
 venv/
 
 # Конфиденциальные файлы
-.env
-*.env
+# Игнорируем .env в папке backend
+/backend/.env
 
 # SQLite
 db.sqlite3
@@ -53,8 +53,10 @@ pip-log.txt
 node_modules/
 
 # React
-build/
-dist/
+
+
+# Игнорируем dist в папке frontend
+/frontend/dist/
 
 # Логи
 npm-debug.log*
