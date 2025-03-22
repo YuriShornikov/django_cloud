@@ -15,7 +15,7 @@
 3.11 ```sudo su postgres``` - зайти в бд
 3.12 ```psql```
 3.13 ```ALTER USER postgres WITH PASSWORD 'admin1234';``` - создаем пользователя с паролем
-3.14 ```CREATE DATABASE cloud;``` - создаем бд
+3.14 ```CREATE DATABASE mycloud;``` - создаем бд
 3.15 ```\q``` - выходим из бд
 3.16 ```cd backend``` - переходим в папку
 3.17 ```python3 -m venv env```
@@ -32,7 +32,7 @@ After=network.target
 User=aukor
 Group=www-data
 WorkingDirectory=/home/aukor/django_cloud/backend
-ExecStartPre=/home/aukor/django_cloud/backend/env/bin/python /home/aukor/django_cloud/backend/manage.py update_site
+
 ExecStart=/home/aukor/django_cloud/backend/env/bin/gunicorn --access-logfile - --workers=3 --bind unix:/home/aukor/django_cloud/backend/mycloud/project.sock mycloud.wsgi:application
 
 [Install]
@@ -44,7 +44,7 @@ WantedBy=multi-user.target
 ```
 server {
         listen 80;
-        server_name 95.163.231.239;
+        server_name 79.174.92.212;
 
         client_max_body_size 100M;
 
@@ -64,7 +64,7 @@ server {
 
 server {
         listen 8000;
-        server_name 95.163.231.239;
+        server_name 79.174.92.212;
 
         client_max_body_size 100M;
 

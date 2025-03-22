@@ -3,9 +3,7 @@ from pathlib import Path
 from decouple import config
 import os
 import environ
-
 import socket
-import requests
 
 # Определение BASE_DIR
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,62 +23,20 @@ def is_local():
         if local_ip.startswith(("127.", "192.168.")):
             return True
 
-        # Проверка на переменную среды IS_SERVER, указывающую, что сервер продакшен
-        if os.getenv("IS_SERVER") == "true":
-            return False
-
-        # Проверяем, есть ли локальный IP в сети
-        test_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        # Подключаемся к Google DNS
-        test_socket.connect(("8.8.8.8", 80))
-        network_ip = test_socket.getsockname()[0]
-        test_socket.close()
-
-        if network_ip.startswith(("192.168.", "10.", "172.")):
-            # Сервер находится в локальной сети
-            return True
+        # Проверка на переменную среды IS_SERVER
+        return not env.bool("IS_SERVER", default=False)
 
     except (socket.gaierror, socket.error):
-        # В случае ошибки считаем сервер локальным
         return True
 
-    # Если не сработал ни один вариант, считаем, что это продакшен
-    return False
 
-# Функция для получения внешнего IP сервера
-def get_external_ip():
-    """Получает внешний IP сервера."""
-    try:
-        response = requests.get("https://api64.ipify.org?format=text", timeout=3)
-        return response.text.strip()
-    except requests.RequestException:
-        return None
-
-# Автоматическое определение BASE_URL
-def get_base_url():
-    """Определяет BASE_URL автоматически."""
-    if is_local():
-        return "http://localhost:8000"
-
-    external_ip = get_external_ip()
-    if external_ip:
-        return f"http://{external_ip}:8000"
-
-    return "http://localhost:8000"
-
-BASE_URL = get_base_url()
+IS_SERVER = env.bool("IS_SERVER", default=False)  # По умолчанию считаем, что локально
+# Определение BASE_URL
+BASE_URL = env("BASE_URL", default="http://localhost:8000")
 
 # Настройка ALLOWED_HOSTS
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "localhost:5173",
-]
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1", "localhost:5173"])
 
-if not is_local():
-    external_ip = get_external_ip()
-    if external_ip:
-        ALLOWED_HOSTS.append(external_ip)
 
 # Пути для сохранения загруженных файлов
 MEDIA_URL = '/media/'

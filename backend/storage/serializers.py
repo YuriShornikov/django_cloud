@@ -54,14 +54,11 @@ class FileSerializer(serializers.ModelSerializer):
     def get_file_name(self, obj):
         return obj.file_name.rsplit('.', 1)[0]
     
-    # def get_url(self, obj):
-    #     current_site = Site.objects.get_current()
-    #     return f"http://{current_site.domain}/media/{obj.url}"
     def get_url(self, obj):
-        request = self.context.get('request')
-        if request:
-            base_url = request.build_absolute_uri('/')[:-1]  # Получаем домен API-запроса
-        else:
-            base_url = settings.BASE_URL  # Используем `BASE_URL`, если request нет
-        
+        base_url = settings.BASE_URL  # Значение из .env
+
+        # Если сервер локальный, используем локальный адрес
+        if not settings.IS_SERVER:
+            base_url = "http://localhost:8000"
+
         return f"{base_url}{settings.MEDIA_URL}{obj.url}"
