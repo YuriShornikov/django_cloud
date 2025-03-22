@@ -21,7 +21,7 @@ cd django_cloud
     DB_PORT=5432
 
     # Указывает, запущен ли сервер в продакшене, если локально, ставим - False
-    IS_SERVER=True
+    IS_SERVER=False
 
     # Базовый URL для сервера
     BASE_URL=http://<IP_СЕРВЕРА>:8000
