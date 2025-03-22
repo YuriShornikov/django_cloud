@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from django.utils.timezone import localtime
 from .models import File
-from django.contrib.sites.models import Site
+from django.conf import settings
+# from django.contrib.sites.models import Site
 
 class FileSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
@@ -53,6 +54,14 @@ class FileSerializer(serializers.ModelSerializer):
     def get_file_name(self, obj):
         return obj.file_name.rsplit('.', 1)[0]
     
+    # def get_url(self, obj):
+    #     current_site = Site.objects.get_current()
+    #     return f"http://{current_site.domain}/media/{obj.url}"
     def get_url(self, obj):
-        current_site = Site.objects.get_current()
-        return f"http://{current_site.domain}/media/{obj.url}"
+        request = self.context.get('request')
+        if request:
+            base_url = request.build_absolute_uri('/')[:-1]  # Получаем домен API-запроса
+        else:
+            base_url = settings.BASE_URL  # Используем `BASE_URL`, если request нет
+        
+        return f"{base_url}{settings.MEDIA_URL}{obj.url}"

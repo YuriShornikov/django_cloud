@@ -3,7 +3,7 @@
 3.1 На рег.ру создать серв: мои ресурсы/виртуальные машины добавить ubuntu на минималках с ssh ключом.
 3.2 В PowerShell прописать ```ssh root@[79.174.92.124](http://79.174.92.124)``` - ip вашего сервера ввести пароль
 3.3 ```adduser aukor``` - создание пользователя
-3.4 ```usermod aukor``` -aG sudo - дать права
+3.4 ```usermod aukor -aG sudo``` -aG sudo - дать права
 3.5 ```su aukor``` - зайти под пользователем aukor
 3.6 ```cd ~``` - выход в директорию
 3.7 ```sudo apt update``` - провести обновление
@@ -44,7 +44,7 @@ WantedBy=multi-user.target
 ```
 server {
         listen 80;
-        server_name 79.174.92.124;
+        server_name 95.163.231.239;
 
         client_max_body_size 100M;
 
@@ -64,7 +64,7 @@ server {
 
 server {
         listen 8000;
-        server_name 79.174.92.124;
+        server_name 95.163.231.239;
 
         client_max_body_size 100M;
 

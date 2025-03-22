@@ -7,44 +7,82 @@ import environ
 import socket
 import requests
 
-# Получение ip
-def get_server_ip():
-    """Получает внешний IP сервера, если он не локальный."""
+# Определение BASE_DIR
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Загрузка переменных окружения
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+
+# Функция для проверки локального окружения
+def is_local():
+    """Определяет, работает ли сервер в локальной сети."""
+    try:
+        hostname = socket.gethostname()
+        local_ip = socket.gethostbyname(hostname)
+
+        # Если IP в диапазоне 127.0.0.1 или 192.168.*, считаем сервер локальным
+        if local_ip.startswith(("127.", "192.168.")):
+            return True
+
+        # Проверка на переменную среды IS_SERVER, указывающую, что сервер продакшен
+        if os.getenv("IS_SERVER") == "true":
+            return False
+
+        # Проверяем, есть ли локальный IP в сети
+        test_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # Подключаемся к Google DNS
+        test_socket.connect(("8.8.8.8", 80))
+        network_ip = test_socket.getsockname()[0]
+        test_socket.close()
+
+        if network_ip.startswith(("192.168.", "10.", "172.")):
+            # Сервер находится в локальной сети
+            return True
+
+    except (socket.gaierror, socket.error):
+        # В случае ошибки считаем сервер локальным
+        return True
+
+    # Если не сработал ни один вариант, считаем, что это продакшен
+    return False
+
+# Функция для получения внешнего IP сервера
+def get_external_ip():
+    """Получает внешний IP сервера."""
     try:
         response = requests.get("https://api64.ipify.org?format=text", timeout=3)
         return response.text.strip()
     except requests.RequestException:
         return None
 
-# Локалка
-def is_local():
-    """Определяет, выполняется ли сервер локально."""
-    try:
-        hostname = socket.gethostname()
-        local_ip = socket.gethostbyname(hostname)
-        return local_ip.startswith("127.") or hostname == "localhost"
-    except socket.gaierror:
-        return True
-    
-# Автоматически настраиваем ALLOWED_HOSTS
+# Автоматическое определение BASE_URL
+def get_base_url():
+    """Определяет BASE_URL автоматически."""
+    if is_local():
+        return "http://localhost:8000"
+
+    external_ip = get_external_ip()
+    if external_ip:
+        return f"http://{external_ip}:8000"
+
+    return "http://localhost:8000"
+
+BASE_URL = get_base_url()
+
+# Настройка ALLOWED_HOSTS
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    "localhost:5173"
+    "localhost:5173",
 ]
 
-# Добавляем ip
 if not is_local():
-    server_ip = get_server_ip()
-    if server_ip:
-        ALLOWED_HOSTS.append(server_ip)
+    external_ip = get_external_ip()
+    if external_ip:
+        ALLOWED_HOSTS.append(external_ip)
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-env = environ.Env()
-environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
-
-# Путь для сохранения загруженных файлов
+# Пути для сохранения загруженных файлов
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
