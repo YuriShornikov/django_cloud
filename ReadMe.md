@@ -182,24 +182,6 @@ sudo nano /etc/nginx/sites-available/my_project
 Вставить:
 ```nginx
 server {
-    listen 80;
-    server_name <IP_СЕРВЕРА>;
-
-    client_max_body_size 100M;
-
-    location / {
-        root /home/aukor/django_cloud/frontend/dist;
-        index index.html;
-        try_files $uri /index.html;
-    }
-
-    location /assets/ {
-        root /home/aukor/django_cloud/frontend/dist;
-        try_files $uri =404;
-    }
-}
-
-server {
     listen 8000;
     server_name <IP_СЕРВЕРА>;
 
@@ -220,9 +202,34 @@ server {
     }
 }
 ```
+Создать конфигурационный файл:
+```sh
+sudo nano /etc/nginx/sites-enabled/default
+```
+Вставить:
+```nginx
+server {
+    listen 80;
+    server_name <IP_СЕРВЕРА>;
+
+    client_max_body_size 100M;
+
+    location / {
+        root /home/aukor/django_cloud/frontend/dist;
+        index index.html;
+        try_files $uri /index.html;
+    }
+
+    location /assets/ {
+        root /home/aukor/django_cloud/frontend/dist;
+        try_files $uri =404;
+    }
+}
+```
 Активировать конфигурацию:
 ```sh
 sudo ln -s /etc/nginx/sites-available/my_project /etc/nginx/sites-enabled/
+sudo nginx -t
 ls -l /etc/nginx/sites-enabled/
 ```
 
