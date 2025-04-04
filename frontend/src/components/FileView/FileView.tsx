@@ -38,8 +38,10 @@ export const FileView: React.FC<FileViewProps> = ({ file, onClose }) => {
   const handleRename = () => {
     if (newFileName && newFileName !== file.file_name) {
       dispatch(renameFile({ fileId: file.id, newName: newFileName }))
-      .then(() => {
-        setTempFileName(newFileName);
+      .unwrap()
+      .then((updatedFile) => {
+        setTempFileName(updatedFile.file_name);
+        setSharedLink(updatedFile.url); // Обновляем ссылку
       })
       .catch((error) => {
         console.error('Ошибка при переименовании файла:', error);

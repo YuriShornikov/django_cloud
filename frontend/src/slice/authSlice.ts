@@ -18,16 +18,18 @@ const initialState: AuthState = {
 
 // Регистрация нового пользователя
 export const registerUser = createAsyncThunk<
-  { user: User },
+  void,
+  // { user: User },
   { login: string; fullname: string; email: string; password: string },
   { rejectValue: string }
 >(
   'auth/registerUser',
   async (userData, { rejectWithValue }) => {
     try {
-      const client = await getApiClientWithCsrf();
-      const response = await client.post('users/register/', userData);
-      return { user: response.data.user };
+      // const client = await getApiClientWithCsrf();
+      await apiClient.post('users/register/', userData);
+      // const response = await client.post('users/register/', userData);
+      // return { user: response.data.user };
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Registration failed');
     }
@@ -131,8 +133,8 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state, action) => {
-        state.currentUser = action.payload.user;
+      .addCase(registerUser.fulfilled, (state) => {
+        // state.currentUser = action.payload.user;
         state.loading = false;
       })
       .addCase(registerUser.rejected, (state, action) => {

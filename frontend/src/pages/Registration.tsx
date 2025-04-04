@@ -54,7 +54,7 @@ export const Registration: React.FC = () => {
 		setIsSubmitting(true);
     dispatch(registerUser({ login, email, password, fullname }))
       .unwrap()
-      .then(() => navigate('/profile'))
+      .then(() => navigate('/login'))
       .catch((err) => alert(err))
       .finally(() => setIsSubmitting(false));
   };

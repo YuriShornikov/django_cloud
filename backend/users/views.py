@@ -27,7 +27,7 @@ class RegisterView(APIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            login(request, user)  # ВАЖНО: создаем сессию
+            # login(request, user)  # ВАЖНО: создаем сессию
             logger.info(f"User registered: {user.login}")
             return Response({
                 "message": "Registration successful",

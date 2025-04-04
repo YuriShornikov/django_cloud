@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/hooks';
 import { loginUser } from '../slice/authSlice';
 import { useNavigate } from 'react-router-dom';
@@ -10,17 +10,26 @@ export const Login: React.FC = () => {
   const dispatch = useAppDispatch();
   const { loading, error, currentUser } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
+  const hasCheckedAuth = useRef(false);
 
   // Проверка авторизации пользователя
-  useEffect(() => {
-    dispatch(checkAuth()).unwrap().catch(() => {});
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(checkAuth()).unwrap().catch(() => {});
+  // }, [dispatch]);
   
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     navigate('/profile');
+  //   }
+  // }, [currentUser, navigate]);
+
   useEffect(() => {
-    if (currentUser) {
-      navigate('/profile');
+    if (!currentUser && !hasCheckedAuth.current) {
+      hasCheckedAuth.current = true;
+      dispatch(checkAuth()).unwrap().catch(() => {});
     }
-  }, [currentUser, navigate]);
+  }, [dispatch, currentUser]);
+  
 
   const handleHome = () => {
     navigate('/');
